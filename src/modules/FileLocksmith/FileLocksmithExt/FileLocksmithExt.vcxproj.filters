@@ -21,6 +21,9 @@
     <ClInclude Include="ExplorerCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LaunchUIProcess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="ClassFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
