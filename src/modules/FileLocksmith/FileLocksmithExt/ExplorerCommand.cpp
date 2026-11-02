@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "ExplorerCommand.h"
+#include "LaunchUIProcess.h"
 #include "dllmain.h"
 #include "Generated Files/resource.h"
 
@@ -270,40 +271,6 @@ HRESULT ExplorerCommand::LaunchUI(CMINVOKECOMMANDINFO* pici, ipc::Writer* writer
     exe_path += L'\\';
     exe_path += constants::nonlocalizable::FileNameUIExe;
 
-    STARTUPINFO startupInfo;
-    ZeroMemory(&startupInfo, sizeof(STARTUPINFO));
-    startupInfo.cb = sizeof(STARTUPINFO);
-    startupInfo.dwFlags = STARTF_USESHOWWINDOW;
-
-    if (pici)
-    {
-        startupInfo.wShowWindow = pici->nShow;
-    }
-    else
-    {
-        startupInfo.wShowWindow = SW_SHOWNORMAL;
-    }
-
-    PROCESS_INFORMATION processInformation;
-    std::wstring command_line = L"\"";
-    command_line += exe_path;
-    command_line += L"\"\0";
-
-    CreateProcessW(
-        NULL,
-        command_line.data(),
-        NULL,
-        NULL,
-        TRUE,
-        0,
-        NULL,
-        NULL,
-        &startupInfo,
-        &processInformation);
-
-    // Discard handles
-    CloseHandle(processInformation.hProcess);
-    CloseHandle(processInformation.hThread);
-
-    return S_OK;
+    const WORD showWindow = static_cast<WORD>(pici ? pici->nShow : SW_SHOWNORMAL);
+    return FileLocksmith::LaunchUIProcess(exe_path, showWindow);
 }
