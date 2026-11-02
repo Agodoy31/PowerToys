@@ -16,20 +16,24 @@ namespace FileLocksmith
         startupInfo.dwFlags = STARTF_USESHOWWINDOW;
         startupInfo.wShowWindow = showWindow;
 
-        PROCESS_INFORMATION processInformation;
+        PROCESS_INFORMATION processInformation = {};
         std::wstring commandLine = L"\"" + executablePath + L"\"";
 
-        CreateProcessW(
-            nullptr,
-            commandLine.data(),
-            nullptr,
-            nullptr,
-            TRUE,
-            0,
-            nullptr,
-            nullptr,
-            &startupInfo,
-            &processInformation);
+        if (!CreateProcessW(
+                nullptr,
+                commandLine.data(),
+                nullptr,
+                nullptr,
+                TRUE,
+                0,
+                nullptr,
+                nullptr,
+                &startupInfo,
+                &processInformation))
+        {
+            const DWORD error = GetLastError();
+            return HRESULT_FROM_WIN32(error);
+        }
 
         CloseHandle(processInformation.hProcess);
         CloseHandle(processInformation.hThread);
