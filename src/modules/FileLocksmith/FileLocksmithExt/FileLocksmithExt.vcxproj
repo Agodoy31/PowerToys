@@ -73,6 +73,7 @@
     <ClInclude Include="ClassFactory.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="ExplorerCommand.h" />
+    <ClInclude Include="LaunchUIProcess.h" />
     <ClInclude Include="RuntimeRegistration.h" />
     <ClInclude Include="pch.h" />
     <None Include="packages.config" />
