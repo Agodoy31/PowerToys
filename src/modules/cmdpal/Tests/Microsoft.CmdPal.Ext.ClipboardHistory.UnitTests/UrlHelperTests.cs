@@ -148,6 +148,18 @@ public class UrlHelperTests
     [DataRow("http://test.org")]
     [DataRow("ftp://files.example.net")]
     [DataRow("file://localhost/path/to/file.txt")]
+    [DataRow("https://example.com:8080/path")]
+    [DataRow("mailto:someone@example.com")]
+    [DataRow("tel:1234")]
+    [DataRow("foo:8080?v=1.0")]
+    [DataRow("com.example.app://open/item")]
+    [DataRow("com.example.app:callback")]
+    [DataRow("com.example.app:/callback")]
+    [DataRow("com.example.app:")]
+    [DataRow("com.example.app:secret@other.com")]
+    [DataRow("example.com:8080@other.com")]
+    [DataRow("example.com:0")]
+    [DataRow("example.com:65536")]
     public void NormalizeUrl_ReturnsUnchanged_WhenUrlIsAlreadyWellFormed(string url)
     {
         // Act
@@ -162,6 +174,13 @@ public class UrlHelperTests
     [DataRow("example.org", "https://example.org")]
     [DataRow("github.com/user/repo", "https://github.com/user/repo")]
     [DataRow("stackoverflow.com/questions/123", "https://stackoverflow.com/questions/123")]
+    [DataRow("example.com:8080/path", "https://example.com:8080/path")]
+    [DataRow("intranet.corp:8443", "https://intranet.corp:8443")]
+    [DataRow("example.com:443/path", "https://example.com:443/path")]
+    [DataRow("example.com:8080/login?next=https://other.com", "https://example.com:8080/login?next=https://other.com")]
+    [DataRow("EXAMPLE.COM:8080/path", "https://EXAMPLE.COM:8080/path")]
+    [DataRow("example.com:8080/path?email=a@b.com", "https://example.com:8080/path?email=a@b.com")]
+    [DataRow("192.168.1.1:8080", "https://192.168.1.1:8080")]
     public void NormalizeUrl_AddsHttpsPrefix_WhenNoProtocolPresent(string input, string expected)
     {
         // Act

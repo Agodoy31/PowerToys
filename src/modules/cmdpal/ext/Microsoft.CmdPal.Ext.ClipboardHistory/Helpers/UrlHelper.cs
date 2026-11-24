@@ -92,7 +92,7 @@ internal static class UrlHelper
             }
         }
 
-        if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
+        if (!Uri.IsWellFormedUriString(url, UriKind.Absolute) || IsSchemelessHostPort(url))
         {
             if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
                 !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
@@ -104,5 +104,26 @@ internal static class UrlHelper
         }
 
         return url;
+    }
+
+    private static bool IsSchemelessHostPort(string url)
+    {
+        url = url.Trim();
+
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || !uri.Scheme.Contains('.', StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var portStartIndex = uri.Scheme.Length + 1;
+        if (portStartIndex >= url.Length || !char.IsAsciiDigit(url[portStartIndex]))
+        {
+            return false;
+        }
+
+        return Uri.TryCreate("https://" + url, UriKind.Absolute, out var httpsUri)
+            && string.IsNullOrEmpty(httpsUri.UserInfo)
+            && httpsUri.Port > 0
+            && Uri.CheckHostName(httpsUri.Host) == UriHostNameType.Dns;
     }
 }
