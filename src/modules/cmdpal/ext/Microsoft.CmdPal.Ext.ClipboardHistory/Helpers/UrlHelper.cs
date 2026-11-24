@@ -108,8 +108,6 @@ internal static class UrlHelper
 
     private static bool IsSchemelessHostPort(string url)
     {
-        url = url.Trim();
-
         if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || !uri.Scheme.Contains('.', StringComparison.Ordinal))
         {
             return false;
