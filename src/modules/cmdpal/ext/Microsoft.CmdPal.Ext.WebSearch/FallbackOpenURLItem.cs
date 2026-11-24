@@ -45,10 +45,12 @@ internal sealed partial class FallbackOpenURLItem : FallbackCommandItem
             return;
         }
 
+        query = query.Trim();
+
         var success = Uri.TryCreate(query, UriKind.Absolute, out _);
 
-        // if url not contain schema, add http:// by default.
-        if (!success)
+        // if url not contain schema, add https:// by default.
+        if (!success || IsSchemelessHostPort(query))
         {
             query = "https://" + query;
         }
@@ -92,5 +94,24 @@ internal sealed partial class FallbackOpenURLItem : FallbackCommandItem
         }
 
         return false;
+    }
+
+    private static bool IsSchemelessHostPort(string url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || !uri.Scheme.Contains('.', StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var portStartIndex = uri.Scheme.Length + 1;
+        if (portStartIndex >= url.Length || !char.IsAsciiDigit(url[portStartIndex]))
+        {
+            return false;
+        }
+
+        return Uri.TryCreate("https://" + url, UriKind.Absolute, out var httpsUri)
+            && string.IsNullOrEmpty(httpsUri.UserInfo)
+            && httpsUri.Port > 0
+            && Uri.CheckHostName(httpsUri.Host) == UriHostNameType.Dns;
     }
 }
